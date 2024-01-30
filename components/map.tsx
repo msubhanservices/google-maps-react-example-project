@@ -6,6 +6,7 @@ import {
   Circle,
   MarkerClusterer,
   Polyline,
+  Polygon
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
@@ -141,6 +142,23 @@ export default function Map() {
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
                 geodesic: true,
+              }}
+            />
+          )}
+
+          {markerPositions.length > 2 && (
+            <Polygon
+              path={markerPositions}
+              options={{
+                fillColor: "#F3EAFD",
+                fillOpacity: 0.5,
+                strokeColor: "blue",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                clickable: false,
+                draggable: false,
+                editable: false,
+                geodesic: false,
               }}
             />
           )}
