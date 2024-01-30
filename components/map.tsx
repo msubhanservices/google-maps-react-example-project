@@ -5,6 +5,7 @@ import {
   DirectionsRenderer,
   Circle,
   MarkerClusterer,
+  Polyline,
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
@@ -31,6 +32,9 @@ export default function Map() {
   );
   const onLoad = useCallback((map) => (mapRef.current = map), []);
   const houses = useMemo(() => generateHouses(center), [center]);
+  const [markerPositions, setMarkerPositions] = useState<
+    Array<LatLngLiteral> | []
+  >([]);
 
   const fetchDirections = (house: LatLngLiteral) => {
     if (!office) return;
@@ -48,6 +52,17 @@ export default function Map() {
         }
       }
     );
+  };
+
+  const handleAddBoudary = (e: any) => {
+    const temp = [
+      ...markerPositions,
+      {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+      },
+    ];
+    setMarkerPositions(temp);
   };
 
   return (
@@ -70,6 +85,7 @@ export default function Map() {
           mapContainerClassName="map-container"
           options={options}
           onLoad={onLoad}
+          onClick={handleAddBoudary}
         >
           {directions && (
             <DirectionsRenderer
@@ -110,6 +126,23 @@ export default function Map() {
               <Circle center={office} radius={30000} options={middleOptions} />
               <Circle center={office} radius={45000} options={farOptions} />
             </>
+          )}
+
+          {markerPositions.length > 0 &&
+            markerPositions.map((marker, index) => (
+              <Marker key={index} position={marker} />
+            ))}
+
+          {markerPositions.length > 1 && (
+            <Polyline
+              path={markerPositions}
+              options={{
+                strokeColor: "blue",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                geodesic: true,
+              }}
+            />
           )}
         </GoogleMap>
       </div>
